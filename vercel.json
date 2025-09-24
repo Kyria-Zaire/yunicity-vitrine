@@ -1,8 +1,12 @@
 {
-  "buildCommand": "npm run build",
-  "devCommand": "npm run dev",
-  "installCommand": "npm install",
+  "version": 2,
+  "name": "yunicity-vitrine",
   "framework": "nextjs",
+  "buildCommand": "cd app && npm ci && npm run build",
+  "devCommand": "cd app && npm run dev",
+  "installCommand": "cd app && npm ci",
+  "outputDirectory": "app/.next",
+  "cleanUrls": true,
   "env": {
     "DATABASE_URL": "@database_url",
     "SENDGRID_API_KEY": "@sendgrid_api_key",
