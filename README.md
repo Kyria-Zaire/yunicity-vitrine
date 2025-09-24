@@ -68,17 +68,16 @@ yarn install
 
 3. **Configuration des variables d'environnement**
 ```bash
-cp .env.example .env.local
+cp app/.env.example app/.env.local
 ```
 
-Configurer les variables dans `.env.local` :
+Configurer les variables dans `app/.env.local` :
 ```env
+# URLs
+NEXT_PUBLIC_SITE_URL="http://localhost:3000"
+
 # Database
 DATABASE_URL="postgresql://username:password@localhost:5432/yunicity"
-
-# Authentication
-NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="your-nextauth-secret"
 
 # Email (SendGrid)
 SENDGRID_API_KEY="your-sendgrid-api-key"
@@ -87,12 +86,11 @@ ADMIN_EMAIL="admin@yunicity.com"
 ADMIN_TOKEN="your-admin-bearer-token"
 
 # Analytics
-NEXT_PUBLIC_GA_ID="G-XXXXXXXXXX"
-NEXT_PUBLIC_SITE_URL="http://localhost:3000"
+NEXT_PUBLIC_GA_MEASUREMENT_ID="G-XXXXXXXXXX"
 
-# Social Media
-NEXT_PUBLIC_FACEBOOK_PAGE_ID="your-facebook-page-id"
-NEXT_PUBLIC_INSTAGRAM_USERNAME="yunicity.app"
+# Turnstile
+NEXT_PUBLIC_TURNSTILE_SITE_KEY=""
+TURNSTILE_SECRET_KEY=""
 ```
 
 4. **Initialiser la base de données**
