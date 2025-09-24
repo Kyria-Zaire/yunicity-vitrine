@@ -4,6 +4,7 @@ import './globals.css'
 import { cn } from '@/lib/utils'
 import { SITE_CONFIG } from '@/lib/config'
 import GoogleAnalytics from '@/components/google-analytics'
+import { ConsentBanner } from '@/components/ui/consent-banner'
 import { Toaster } from 'react-hot-toast'
 
 const inter = Inter({ 
@@ -19,6 +20,7 @@ const outfit = Outfit({
 })
 
 export const metadata = {
+  metadataBase: process.env.NEXT_PUBLIC_SITE_URL ? new URL(process.env.NEXT_PUBLIC_SITE_URL) : undefined,
   title: SITE_CONFIG.meta.title,
   description: SITE_CONFIG.meta.description,
   keywords: SITE_CONFIG.meta.keywords,
@@ -28,7 +30,15 @@ export const metadata = {
     description: SITE_CONFIG.meta.description,
     type: 'website',
     locale: 'fr_FR',
-    siteName: 'Yunicity'
+    siteName: 'Yunicity',
+    images: [
+      {
+        url: '/logo-yunicity.png',
+        width: 1200,
+        height: 630,
+        alt: 'Yunicity - Faire battre le cœur de la ville',
+      }
+    ]
   },
   twitter: {
     card: 'summary_large_image',
@@ -36,7 +46,7 @@ export const metadata = {
     description: SITE_CONFIG.meta.description,
   },
   icons: {
-    icon: '/favicon.ico',
+    icon: '/logo-yunicity.png',
   },
   robots: {
     index: true,
@@ -79,7 +89,7 @@ export default function RootLayout({
               "name": "Yunicity",
               "description": SITE_CONFIG.meta.description,
               "url": process.env.NEXT_PUBLIC_SITE_URL || 'https://yunicity.com',
-              "logo": `${process.env.NEXT_PUBLIC_SITE_URL || "https://yunicity.com"}/logo.png`,
+              "logo": `${process.env.NEXT_PUBLIC_SITE_URL || "https://yunicity.com"}/logo-yunicity.png`,
               "sameAs": [
                 SITE_CONFIG.social.linkedin.url,
                 SITE_CONFIG.social.facebook.url,
@@ -92,6 +102,12 @@ export default function RootLayout({
             })
           }}
         />
+        {/* Cloudflare Turnstile */}
+        <script
+          src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+          async
+          defer
+        />
       </head>
       <body className={cn(
         'min-h-screen bg-background font-sans antialiased',
@@ -101,6 +117,7 @@ export default function RootLayout({
         <div id="root">
           {children}
         </div>
+        <ConsentBanner />
         <Toaster
           position="top-right"
           toastOptions={{

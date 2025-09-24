@@ -1,43 +1,51 @@
 
 import { NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
 import { sendInvestorContactNotification } from '@/lib/sendgrid'
+import { prisma } from '@/lib/db'
+import { z } from 'zod'
+import { verifyTurnstileToken } from '@/app/api/_utils/verify-turnstile'
 
 export const dynamic = "force-dynamic"
 
-const prisma = new PrismaClient()
+const ContactSchema = z.object({
+  name: z.string().trim().min(1, 'Le nom est requis').max(200),
+  email: z.string().trim().email('Format d\'email invalide').max(320),
+  company: z.string().trim().max(200).optional().or(z.literal('').transform(() => undefined)),
+  investorType: z.string().trim().max(100).optional().or(z.literal('').transform(() => undefined)),
+  investmentRange: z.string().trim().max(100).optional().or(z.literal('').transform(() => undefined)),
+  message: z.string().trim().min(1, 'Le message est requis').max(5000),
+})
 
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { name, email, company, investorType, investmentRange, message } = body
-
-    // Validation
-    if (!name?.trim() || !email?.trim() || !message?.trim()) {
+    const parsed = ContactSchema.safeParse(body)
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Les champs nom, email et message sont requis' },
+        { error: 'Validation échouée', details: parsed.error.flatten() },
         { status: 400 }
       )
     }
+    const { name, email, company, investorType, investmentRange, message } = parsed.data
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email.trim())) {
-      return NextResponse.json(
-        { error: 'Format d\'email invalide' },
-        { status: 400 }
-      )
+    // Vérifier Turnstile côté serveur si clé présente
+    const cfToken = (body?.cfToken as string) || ''
+    if (process.env.TURNSTILE_SECRET_KEY) {
+      const v = await verifyTurnstileToken(cfToken)
+      if (!v.success) {
+        return NextResponse.json({ error: 'Vérification anti-bot échouée' }, { status: 400 })
+      }
     }
 
     // Store in database
     const contact = await prisma.investorContact.create({
       data: {
-        name: name.trim(),
-        email: email.trim().toLowerCase(),
-        company: company?.trim() || null,
+        name,
+        email: email.toLowerCase(),
+        company: company || null,
         investorType: investorType || null,
         investmentRange: investmentRange || null,
-        message: message.trim(),
+        message,
       }
     })
 
@@ -75,12 +83,17 @@ export async function POST(request: Request) {
       { status: 500 }
     )
   } finally {
-    await prisma.$disconnect()
+    // prisma géré globalement via lib/db
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const auth = request.headers.get('authorization') || ''
+    const token = auth.startsWith('Bearer ') ? auth.slice(7) : undefined
+    if (!process.env.ADMIN_TOKEN || token !== process.env.ADMIN_TOKEN) {
+      return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
+    }
     const count = await prisma.investorContact.count()
     const recent = await prisma.investorContact.findMany({
       take: 5,
@@ -108,6 +121,6 @@ export async function GET() {
       { status: 500 }
     )
   } finally {
-    await prisma.$disconnect()
+    // noop
   }
 }

@@ -11,6 +11,7 @@ import { Label } from './ui/label'
 import { Badge } from './ui/badge'
 import { trackInvestorContact } from './google-analytics'
 import toast from 'react-hot-toast'
+import { Turnstile } from './ui/turnstile'
 
 interface ContactFormData {
   name: string
@@ -23,6 +24,8 @@ interface ContactFormData {
 
 export default function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [cfToken, setCfToken] = useState<string>('')
+  const hasTurnstile = !!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
   const [formData, setFormData] = useState<ContactFormData>({
     name: '',
     email: '',
@@ -43,6 +46,10 @@ export default function ContactForm() {
       toast.error('Veuillez remplir les champs obligatoires')
       return
     }
+    if (hasTurnstile && !cfToken) {
+      toast.error('Veuillez compléter la vérification anti-bot')
+      return
+    }
 
     setIsSubmitting(true)
 
@@ -50,7 +57,7 @@ export default function ContactForm() {
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({ ...formData, cfToken: hasTurnstile ? cfToken : undefined })
       })
 
       const data = await response.json()
@@ -225,6 +232,11 @@ export default function ContactForm() {
 
               {/* Call to action */}
               <div className="text-center pt-6 border-t border-gray-200">
+              {hasTurnstile && (
+                <div className="mb-4 flex justify-center">
+                  <Turnstile onToken={setCfToken} />
+                </div>
+              )}
                 <Button
                   type="submit"
                   disabled={isSubmitting}

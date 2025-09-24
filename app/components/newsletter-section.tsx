@@ -11,6 +11,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { trackNewsletterSignup } from '@/components/google-analytics'
 import { SITE_CONFIG } from '@/lib/config'
+import { Turnstile } from '@/components/ui/turnstile'
 
 export default function NewsletterSection() {
   const [ref, inView] = useInView({
@@ -28,6 +29,8 @@ export default function NewsletterSection() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [error, setError] = useState('')
+  const [cfToken, setCfToken] = useState('')
+  const hasTurnstile = !!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target || {}
@@ -54,6 +57,11 @@ export default function NewsletterSection() {
       return
     }
 
+    if (hasTurnstile && !cfToken) {
+      setError('Veuillez compléter la vérification anti-bot')
+      return
+    }
+
     setIsSubmitting(true)
     setError('')
 
@@ -63,7 +71,7 @@ export default function NewsletterSection() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, cfToken: hasTurnstile ? cfToken : undefined }),
       })
 
       const result = await response.json()
@@ -289,6 +297,11 @@ Date: ${new Date().toLocaleString('fr-FR')}
 
               {/* Submit Button */}
               <div className="flex flex-col items-center space-y-4">
+                {hasTurnstile && (
+                  <div className="w-full md:w-auto">
+                    <Turnstile onToken={setCfToken} />
+                  </div>
+                )}
                 <Button
                   type="submit"
                   disabled={isSubmitting}

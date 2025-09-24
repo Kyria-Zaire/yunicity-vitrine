@@ -1,40 +1,59 @@
 
 import { NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import { prisma } from '@/lib/db'
+import { randomUUID } from 'crypto'
+import { verifyTurnstileToken } from '@/app/api/_utils/verify-turnstile'
+import { z } from 'zod'
 import { sendWelcomeNewsletter } from '@/lib/sendgrid'
 
 export const dynamic = "force-dynamic"
 
-const prisma = new PrismaClient()
+const NewsletterSchema = z.object({
+  email: z.string().trim().email('Format d\'email invalide').max(320),
+  name: z.string().trim().max(200).optional().or(z.literal('').transform(() => undefined)),
+  company: z.string().trim().max(200).optional().or(z.literal('').transform(() => undefined)),
+  message: z.string().trim().max(2000).optional().or(z.literal('').transform(() => undefined)),
+})
 
 export async function POST(request: Request) {
   try {
     const body = await request?.json()
-    const { email, name, company, message } = body || {}
-
-    // Validation
-    if (!email?.trim()) {
+    const parsed = NewsletterSchema.safeParse(body || {})
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: 'L\'email est requis' },
+        { error: 'Validation échouée', details: parsed.error.flatten() },
         { status: 400 }
       )
     }
+    const { email, name, company, message } = parsed.data
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email?.trim())) {
-      return NextResponse.json(
-        { error: 'Format d\'email invalide' },
-        { status: 400 }
-      )
+    // Turnstile server-side verification (if enabled)
+    const cfToken = (body?.cfToken as string) || ''
+    if (process.env.TURNSTILE_SECRET_KEY) {
+      const v = await verifyTurnstileToken(cfToken)
+      if (!v.success) {
+        return NextResponse.json({ error: 'Vérification anti-bot échouée' }, { status: 400 })
+      }
     }
 
     // Check if email already exists
     const existingSubscriber = await prisma?.newsletter?.findUnique({
-      where: { email: email?.trim()?.toLowerCase() }
+      where: { email: email.toLowerCase() }
     })
 
     if (existingSubscriber) {
+      if (existingSubscriber.unsubscribedAt) {
+        return NextResponse.json(
+          { error: 'Cet email s\'est désinscrit. Contactez-nous pour réactiver.' },
+          { status: 403 }
+        )
+      }
+      if (!existingSubscriber.confirmed) {
+        return NextResponse.json(
+          { error: 'Cet email est en attente de confirmation. Vérifiez votre boîte mail.' },
+          { status: 409 }
+        )
+      }
       return NextResponse.json(
         { error: 'Cet email est déjà inscrit à notre newsletter' },
         { status: 409 }
@@ -42,21 +61,29 @@ export async function POST(request: Request) {
     }
 
     // Create new subscriber
+    const token = randomUUID()
+    const unsubscribeToken = randomUUID()
     const subscriber = await prisma?.newsletter?.create({
       data: {
-        email: email?.trim()?.toLowerCase(),
-        name: name?.trim() || null,
-        company: company?.trim() || null,
-        message: message?.trim() || null,
+        email: email.toLowerCase(),
+        name: name || null,
+        company: company || null,
+        message: message || null,
+        confirmationToken: token,
+        confirmed: false,
+        unsubscribeToken,
       }
     })
 
     // Send welcome email (non-blocking)
     try {
+      const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://yunicity.com'
+      const confirmUrl = `${baseUrl}/confirm?token=${encodeURIComponent(token)}`
       await sendWelcomeNewsletter({
         email: subscriber.email,
         name: subscriber.name || undefined,
-        company: subscriber.company || undefined
+        company: subscriber.company || undefined,
+        confirmUrl
       })
     } catch (emailError) {
       console.error('Failed to send welcome email:', emailError)
@@ -89,7 +116,7 @@ export async function POST(request: Request) {
       { status: 500 }
     )
   } finally {
-    await prisma?.$disconnect()
+    // prisma géré globalement via lib/db
   }
 }
 
@@ -109,6 +136,6 @@ export async function GET() {
       { status: 500 }
     )
   } finally {
-    await prisma?.$disconnect()
+    // noop
   }
 }

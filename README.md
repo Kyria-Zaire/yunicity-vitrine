@@ -83,9 +83,12 @@ NEXTAUTH_SECRET="your-nextauth-secret"
 # Email (SendGrid)
 SENDGRID_API_KEY="your-sendgrid-api-key"
 FROM_EMAIL="noreply@yunicity.com"
+ADMIN_EMAIL="admin@yunicity.com"
+ADMIN_TOKEN="your-admin-bearer-token"
 
 # Analytics
 NEXT_PUBLIC_GA_ID="G-XXXXXXXXXX"
+NEXT_PUBLIC_SITE_URL="http://localhost:3000"
 
 # Social Media
 NEXT_PUBLIC_FACEBOOK_PAGE_ID="your-facebook-page-id"
@@ -94,9 +97,8 @@ NEXT_PUBLIC_INSTAGRAM_USERNAME="yunicity.app"
 
 4. **Initialiser la base de données**
 ```bash
-yarn prisma generate
-yarn prisma db push
-yarn prisma db seed
+yarn prisma:generate
+yarn db:push
 ```
 
 5. **Lancer en développement**

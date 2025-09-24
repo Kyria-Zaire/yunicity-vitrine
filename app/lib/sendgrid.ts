@@ -17,6 +17,7 @@ export interface NewsletterData {
   name?: string
   company?: string
   email: string
+  confirmUrl?: string
 }
 
 /**
@@ -82,18 +83,18 @@ export async function sendWelcomeNewsletter(subscriberData: NewsletterData) {
           Notre lancement approche ! Restez connecté(e) pour ne rien manquer de cette aventure entrepreneuriale.
         </p>
 
+        ${subscriberData.confirmUrl ? `
         <div style="text-align: center; margin: 30px 0;">
-          <a href="https://yunicity.com" 
-             style="display: inline-block; background: linear-gradient(135deg, #7c3aed, #a855f7); color: white; text-decoration: none; padding: 15px 30px; border-radius: 8px; font-weight: bold;">
-            🌟 Découvrir Yunicity
+          <a href="${subscriberData.confirmUrl}" 
+             style="display: inline-block; background: linear-gradient(135deg, #10b981, #059669); color: white; text-decoration: none; padding: 15px 30px; border-radius: 8px; font-weight: bold;">
+            ✅ Confirmer mon inscription
           </a>
-        </div>
+          <p style="color:#6b7280; font-size: 12px; margin-top:8px;">Si le bouton ne fonctionne pas, copiez ce lien dans votre navigateur :<br>${subscriberData.confirmUrl}</p>
+        </div>` : ''}
 
         <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 30px 0;">
-        
-        <p style="color: #9ca3af; font-size: 14px; text-align: center;">
-          Yunicity - Faire battre le cœur de la ville<br>
-          📍 Reims, France | 🚀 Lancement imminent
+        <p style="color:#94a3b8; font-size:12px; text-align:center;">
+          Vous pouvez vous désinscrire à tout moment depuis notre site.
         </p>
       </div>
     </body>
@@ -112,6 +113,11 @@ Ce qui vous attend :
 - Découverte des 50+ commerces partenaires
 - Updates exclusives sur notre levée de fonds
 - Évènements communautaires dans la région rémoise
+
+${subscriberData.confirmUrl ? `
+Pour confirmer votre inscription, cliquez sur le lien suivant :
+${subscriberData.confirmUrl}
+` : ''}
 
 Notre lancement approche ! Restez connecté(e) pour ne rien manquer.
 

@@ -14,6 +14,10 @@ export default function GoogleAnalytics() {
   const pathname = usePathname()
   
   useEffect(() => {
+    // Respecter le consentement cookies avant tout tracking
+    const hasConsent = typeof document !== 'undefined' && document.cookie.split('; ').includes('cookie_consent=accepted')
+    if (!hasConsent) return
+
     // Track page views
     if (typeof window !== 'undefined' && window.gtag) {
       window.gtag('config', process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || '', {
@@ -22,8 +26,9 @@ export default function GoogleAnalytics() {
     }
   }, [pathname])
 
-  // Don't render anything if no GA ID
-  if (!process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID) {
+  // Ne rien rendre si pas d'ID ou si consentement absent
+  const hasConsent = typeof document !== 'undefined' && document.cookie.split('; ').includes('cookie_consent=accepted')
+  if (!process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || !hasConsent) {
     return null
   }
 
