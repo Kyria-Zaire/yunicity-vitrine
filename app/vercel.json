@@ -1,0 +1,15 @@
+{
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "env": {
+    "DATABASE_URL": "@database_url",
+    "SENDGRID_API_KEY": "@sendgrid_api_key",
+    "FROM_EMAIL": "@from_email",
+    "NEXT_PUBLIC_GA_ID": "@ga_id",
+    "NEXT_PUBLIC_SITE_URL": "@site_url",
+    "TURNSTILE_SECRET_KEY": "@turnstile_secret_key",
+    "NEXT_PUBLIC_TURNSTILE_SITE_KEY": "@turnstile_site_key"
+  }
+}
