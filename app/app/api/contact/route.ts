@@ -54,9 +54,9 @@ export async function POST(request: Request) {
       await sendInvestorContactNotification({
         name: contact.name,
         email: contact.email,
-        company: contact.company,
-        investorType: contact.investorType,
-        investmentRange: contact.investmentRange,
+        company: contact.company || undefined,
+        investorType: contact.investorType || undefined,
+        investmentRange: contact.investmentRange || undefined,
         message: contact.message
       })
     } catch (emailError) {

@@ -73,7 +73,7 @@ export function FacebookPagePlugin({
   )
 }
 
-export function InstagramEmbed({ postUrl, width = 340, height = 500 }: InstagramEmbedProps) {
+export function InstagramEmbed({ postUrl }: InstagramEmbedProps) {
   useEffect(() => {
     // Charger le script Instagram Embed
     if (typeof window !== 'undefined' && !window.instgrm) {
@@ -150,8 +150,13 @@ export function InstagramEmbed({ postUrl, width = 340, height = 500 }: Instagram
 // Déclarations TypeScript pour les APIs externes
 declare global {
   interface Window {
-    FB: any
+    FB: {
+      init: (config: { xfbml: boolean; version: string }) => void
+      XFBML: { parse: () => void }
+    }
     fbAsyncInit: () => void
-    instgrm: any
+    instgrm: {
+      Embeds: { process: () => void }
+    }
   }
 }

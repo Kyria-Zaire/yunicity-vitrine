@@ -4,12 +4,10 @@
 import { Star, MessageCircle, Heart } from 'lucide-react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
-import { useState, useEffect } from 'react'
 import CountdownTimer from './countdown-timer'
 import { SITE_CONFIG } from '@/lib/config'
 
 export default function HeroSection() {
-  const [preRegistrations, setPreRegistrations] = useState(0)
   
   const scrollToNewsletter = () => {
     const element = document.getElementById('newsletter')

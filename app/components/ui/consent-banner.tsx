@@ -31,7 +31,7 @@ export function ConsentBanner() {
       <Card className="mx-auto max-w-3xl p-4 shadow-lg">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <p className="text-sm text-gray-700">
-            Nous utilisons des cookies pour mesurer l'audience (Google Analytics) et améliorer votre expérience. Vous pouvez accepter ou refuser.
+            Nous utilisons des cookies pour mesurer l&apos;audience (Google Analytics) et améliorer votre expérience. Vous pouvez accepter ou refuser.
           </p>
           <div className="flex gap-2 justify-end">
             <Button variant="secondary" onClick={reject}>Refuser</Button>

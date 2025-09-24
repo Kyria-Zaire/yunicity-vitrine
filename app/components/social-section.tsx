@@ -19,7 +19,7 @@ export function SocialSection() {
             Rejoignez Notre Communauté
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Suivez-nous sur nos réseaux sociaux pour ne rien manquer de l'actualité Yunicity
+            Suivez-nous sur nos réseaux sociaux pour ne rien manquer de l&apos;actualité Yunicity
           </p>
         </motion.div>
 

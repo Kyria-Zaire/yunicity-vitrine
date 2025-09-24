@@ -95,7 +95,7 @@ export default function ContactForm() {
             💰 Investisseurs & Partenaires
           </Badge>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-            Rejoignez l'Aventure Yunicity
+            Rejoignez l&apos;Aventure Yunicity
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Vous êtes investisseur, business angel ou partenaire potentiel ? 
@@ -187,7 +187,7 @@ export default function ContactForm() {
 
                   <div>
                     <Label htmlFor="investmentRange" className="text-sm font-medium text-gray-700">
-                      Ticket d'investissement
+                      Ticket d&apos;investissement
                     </Label>
                     <Select onValueChange={(value) => handleInputChange('investmentRange', value)}>
                       <SelectTrigger className="mt-1">

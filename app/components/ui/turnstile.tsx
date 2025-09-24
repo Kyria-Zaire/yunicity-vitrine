@@ -5,7 +5,7 @@ import { useEffect, useRef } from 'react'
 declare global {
   interface Window {
     turnstile?: {
-      render: (el: HTMLElement, options: any) => void
+      render: (el: HTMLElement, options: { sitekey: string; theme: string; callback: (token: string) => void }) => void
       reset: (widgetId?: string) => void
       getResponse: (widgetId?: string) => string
     }

@@ -6,7 +6,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const routes = ['', '/#investisseurs', '/#newsletter', '/#fonctionnalites'].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
-    changeFrequency: 'weekly',
+    changeFrequency: 'weekly' as const,
     priority: route === '' ? 1 : 0.7,
   }))
 

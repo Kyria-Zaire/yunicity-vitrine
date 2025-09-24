@@ -143,7 +143,7 @@ export default function CountdownTimer({ targetDate }: CountdownTimerProps) {
         </div>
         
         <p className="text-xl text-white/80 mb-4">
-          Rejoignez des milliers d'utilisateurs qui attendent le lancement
+          Rejoignez des milliers d&apos;utilisateurs qui attendent le lancement
         </p>
         
         <div className="flex items-center justify-center gap-2 text-white/60">

@@ -9,7 +9,7 @@ export async function verifyTurnstileToken(token?: string) {
     if (ip) formData.append('remoteip', ip)
     const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
       method: 'POST',
-      body: formData as any,
+      body: formData,
     })
     const data = await res.json()
     return { success: !!data.success, data }

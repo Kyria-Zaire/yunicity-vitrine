@@ -136,7 +136,14 @@ Reims, France
 /**
  * Notifie l'équipe d'un nouveau contact investisseur
  */
-export async function sendInvestorContactNotification(contactData: any) {
+export async function sendInvestorContactNotification(contactData: {
+  name: string;
+  email: string;
+  company?: string;
+  investorType?: string;
+  investmentRange?: string;
+  message: string;
+}) {
   const notificationHTML = `
     <!DOCTYPE html>
     <html>
