@@ -7,16 +7,20 @@ import GoogleAnalytics from '@/components/google-analytics'
 import { ConsentBanner } from '@/components/ui/consent-banner'
 import { Toaster } from 'react-hot-toast'
 
-const inter = Inter({ 
+const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
   display: 'swap',
+  preload: true,
+  fallback: ['system-ui', 'arial'],
 })
 
-const outfit = Outfit({ 
+const outfit = Outfit({
   subsets: ['latin'],
   variable: '--font-outfit',
   display: 'swap',
+  preload: true,
+  fallback: ['system-ui', 'arial'],
 })
 
 export const metadata = {
@@ -74,9 +78,13 @@ export default function RootLayout({
         {/* Préchargement des fonts pour améliorer les performances */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        
+
+        {/* Préchargement des CDN d'images */}
+        <link rel="dns-prefetch" href="https://cdn.abacus.ai" />
+        <link rel="preconnect" href="https://cdn.abacus.ai" crossOrigin="anonymous" />
+
         {/* Meta tags pour les performances */}
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
         <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
         
         {/* Structured Data */}
